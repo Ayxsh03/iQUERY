@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.so
+*.cfg
+!setup.cfg
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Vector store (large binary, don't commit)
+backend/chroma_db/
+
+# Uploaded docs (user data)
+backend/data/uploads/
+
+# Node
+node_modules/
+.next/
+out/
+frontend/.next/
+frontend/out/
+frontend/node_modules/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# SQLite database
+*.db
+*.sqlite
+
+# Docker
+.dockerignore

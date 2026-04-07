@@ -29,7 +29,6 @@ COPY --from=builder /install /usr/local
 
 # Copy application source
 COPY app/ ./app/
-COPY scripts/ ./scripts/ 2>/dev/null || true
 
 # Create data directories (ChromaDB + SQLite will use these)
 RUN mkdir -p /app/chroma_db /app/data

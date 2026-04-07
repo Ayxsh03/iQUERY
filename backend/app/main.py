@@ -90,19 +90,49 @@ app.include_router(admin_router)
 app.include_router(feedback_router)
 
 
+# ── Startup Event ─────────────────────────────────────────────────────
+@app.on_event("startup")
+async def startup_event():
+    """Preload models and initialize services on startup."""
+    print("[STARTUP] Initializing iQuery API...")
+    
+    # Preload embedding model to avoid first-request delay
+    try:
+        from app.embeddings.embedder import _get_model
+        print("[STARTUP] Loading embedding model...")
+        _get_model()
+        print("[STARTUP] Embedding model loaded successfully")
+    except Exception as e:
+        print(f"[STARTUP] Warning: Could not preload embedding model: {e}")
+    
+    print(f"[STARTUP] API ready on port {settings.app_port}")
+
+
 # ── Health check ─────────────────────────────────────────────────────
 @app.get("/api/health", tags=["System"], summary="Health check")
 async def health():
     """Returns a 200 OK with basic system info."""
-    from app.vectorstore.chroma_store import get_collection_count
+    try:
+        from app.vectorstore.chroma_store import get_collection_count
+        chunk_count = get_collection_count()
+    except Exception as e:
+        print(f"[HEALTH] ChromaDB not ready: {e}")
+        chunk_count = 0
+    
     return {
         "status": "ok",
         "service": "iQuery API",
         "version": "2.0.0",
         "llm_provider": settings.llm_provider,
         "embedding_model": settings.embedding_model,
-        "total_chunks_indexed": get_collection_count(),
+        "total_chunks_indexed": chunk_count,
     }
+
+
+@app.get("/api/ready", tags=["System"], summary="Readiness probe")
+async def ready():
+    """Lightweight readiness check for load balancers."""
+    return {"status": "ready"}
 
 
 @app.get("/", include_in_schema=False)

@@ -29,15 +29,19 @@ COPY --from=builder /install /usr/local
 
 # Copy application source
 COPY app/ ./app/
+COPY scripts/ ./scripts/ 2>/dev/null || true
 
 # Create data directories (ChromaDB + SQLite will use these)
 RUN mkdir -p /app/chroma_db /app/data
 
+# Pre-download the embedding model to avoid runtime download delay
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
+
 # Expose API port
 EXPOSE 8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+# Health check - increased start-period to 120s for model loading
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
     CMD python -c "import urllib.request, os; port = os.environ.get('PORT', '8000'); urllib.request.urlopen(f'http://localhost:{port}/api/health')"
 
 # Use shell form to allow environment variable expansion for PORT

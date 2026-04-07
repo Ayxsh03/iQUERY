@@ -16,6 +16,14 @@ FROM python:3.11-slim AS runtime
 
 WORKDIR /app
 
+# Crucial for 512MB free tier: limit PyTorch/OpenBLAS threads so memory doesn't spike
+ENV OMP_NUM_THREADS=1
+ENV MKL_NUM_THREADS=1
+ENV OPENBLAS_NUM_THREADS=1
+ENV VECLIB_MAXIMUM_THREADS=1
+ENV NUMEXPR_NUM_THREADS=1
+ENV TOKENIZERS_PARALLELISM=false
+
 # Copy installed packages from builder
 COPY --from=builder /install /usr/local
 

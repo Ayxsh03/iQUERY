@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   // Allow API calls to the backend in development
   async rewrites() {
     return process.env.NODE_ENV === 'development'

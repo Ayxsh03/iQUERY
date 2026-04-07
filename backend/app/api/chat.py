@@ -26,7 +26,7 @@ router = APIRouter(prefix="/api", tags=["Chat"])
 # ── Request / Response schemas ────────────────────────────────────────
 
 class ChatRequest(BaseModel):
-    query: str = Field(..., min_length=3, max_length=1000, description="User's question")
+    query: str = Field(..., min_length=1, max_length=1000, description="User's question")
     top_k: Optional[int] = Field(default=None, ge=1, le=20, description="Override result count")
     source_filter: Optional[str] = Field(default=None, description="Restrict to a specific document")
 

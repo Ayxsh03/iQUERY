@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     # ── LLM ──────────────────────────────────────────────────────────
     llm_provider: str = "groq"          # "groq" | "ollama"
     groq_api_key: str = ""
-    groq_model: str = "llama3-8b-8192"
+    groq_model: str = "llama-3.1-8b-instant"
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "mistral"
 

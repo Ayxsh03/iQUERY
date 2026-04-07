@@ -41,6 +41,13 @@ class Settings(BaseSettings):
     app_host: str = "0.0.0.0"
     app_port: int = 8000
 
+    # ── Database ─────────────────────────────────────────────────────
+    db_path: str = "./iquery.db"
+
+    # ── CORS ─────────────────────────────────────────────────────────
+    # Set to the deployed frontend URL in production (e.g. https://iquery.onrender.com)
+    frontend_url: str = ""
+
 
 @lru_cache()
 def get_settings() -> Settings:

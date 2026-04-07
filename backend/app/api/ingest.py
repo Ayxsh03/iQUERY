@@ -4,6 +4,7 @@ embedding, and storage in a single POST /api/ingest endpoint.
 """
 
 import time
+from datetime import datetime, timezone
 from typing import List
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
@@ -13,6 +14,7 @@ from app.ingestion.loader import load_document
 from app.ingestion.chunker import chunk_pages
 from app.embeddings.embedder import embed_texts
 from app.vectorstore.chroma_store import add_chunks, delete_document, list_documents
+from app.db.database import get_db
 
 router = APIRouter(prefix="/api", tags=["Ingestion"])
 
@@ -80,6 +82,21 @@ async def ingest_document(file: UploadFile = File(...)):
         count = add_chunks(chunks, embeddings)
 
         elapsed = round(time.time() - start, 3)
+        upload_ts = datetime.now(timezone.utc).isoformat()
+
+        # Persist metadata to SQLite
+        with get_db() as conn:
+            conn.execute(
+                """
+                INSERT INTO documents (filename, upload_ts, chunk_count, status)
+                VALUES (?, ?, ?, 'indexed')
+                ON CONFLICT(filename) DO UPDATE SET
+                    upload_ts   = excluded.upload_ts,
+                    chunk_count = excluded.chunk_count,
+                    status      = 'indexed'
+                """,
+                (filename, upload_ts, count),
+            )
 
         return IngestResponse(
             filename=filename,

@@ -1,0 +1,27 @@
+iQuery Sample Company Policy Document
+=====================================
+
+Annual Leave Policy
+-------------------
+All full-time employees are entitled to 20 days of annual paid leave per year.
+Leave must be requested at least 2 weeks in advance and approved by the direct manager.
+Unused leave can be carried forward to the next year up to a maximum of 10 days.
+
+Sick Leave Policy
+-----------------
+Employees are entitled to 10 days of paid sick leave per calendar year.
+A medical certificate is required for sick leave exceeding 3 consecutive days.
+
+Remote Work Policy
+------------------
+Employees may work remotely up to 3 days per week with manager approval.
+Remote work requests must be submitted via the HR portal by Friday of the preceding week.
+Employees are expected to be reachable during core hours: 10:00 AM to 4:00 PM local time.
+
+Onboarding
+----------
+New employees will complete a 2-week onboarding program that includes:
+- Company culture and values overview
+- IT setup and security training
+- Department-specific process walkthrough
+- Introduction meetings with key stakeholders

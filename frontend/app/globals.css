@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Variables ──────────────────────────────────────────────── */
+:root {
+  --bg-primary:    #0f1117;
+  --bg-secondary:  #1a1d27;
+  --bg-tertiary:   #222535;
+  --bg-card:       #1e2130;
+  --border:        #2a2d3e;
+  --border-light:  #333650;
+  --text-primary:  #e8eaf0;
+  --text-secondary:#9196aa;
+  --text-muted:    #5e6171;
+  --brand:         #4f8ef7;
+  --brand-dark:    #3a75e0;
+  --brand-glow:    rgba(79,142,247,0.15);
+  --success:       #34d399;
+  --warning:       #f59e0b;
+  --danger:        #f87171;
+}
+
+/* ── Base reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: var(--border-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ── Utility classes ────────────────────────────────────────────── */
+@layer components {
+  .card {
+    @apply rounded-xl border bg-[var(--bg-card)] border-[var(--border)] p-4;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-lg bg-[var(--brand)] text-white
+           px-4 py-2 text-sm font-medium transition-all duration-200
+           hover:bg-[var(--brand-dark)] disabled:opacity-50 disabled:cursor-not-allowed
+           focus:outline-none focus:ring-2 focus:ring-[var(--brand)] focus:ring-offset-2 focus:ring-offset-[var(--bg-primary)];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 rounded-lg border border-[var(--border)]
+           px-4 py-2 text-sm font-medium text-[var(--text-secondary)] transition-all duration-200
+           hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center gap-2 rounded-lg border border-red-800/50
+           px-3 py-1.5 text-xs font-medium text-red-400 transition-all duration-200
+           hover:bg-red-900/30 hover:border-red-600 disabled:opacity-50;
+  }
+
+  .input {
+    @apply w-full rounded-lg border border-[var(--border)] bg-[var(--bg-tertiary)]
+           px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)]
+           transition-colors duration-200 outline-none
+           focus:border-[var(--brand)] focus:ring-1 focus:ring-[var(--brand)];
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium;
+  }
+  .badge-green  { @apply bg-emerald-900/40 text-emerald-400 border border-emerald-800/50; }
+  .badge-red    { @apply bg-red-900/40 text-red-400 border border-red-800/50; }
+  .badge-blue   { @apply bg-blue-900/40 text-blue-400 border border-blue-800/50; }
+  .badge-yellow { @apply bg-yellow-900/40 text-yellow-400 border border-yellow-800/50; }
+
+  /* Loading dots */
+  .dot { @apply inline-block w-2 h-2 rounded-full bg-[var(--brand)]; }
+  .dot-1 { animation: pulseDot 1.4s ease-in-out 0s   infinite; }
+  .dot-2 { animation: pulseDot 1.4s ease-in-out 0.2s infinite; }
+  .dot-3 { animation: pulseDot 1.4s ease-in-out 0.4s infinite; }
+}
+
+@layer utilities {
+  .animate-fade-in { animation: fadeIn 0.3s ease-in-out; }
+  .animate-slide-up { animation: slideUp 0.3s ease-out; }
+}

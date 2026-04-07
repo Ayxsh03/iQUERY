@@ -4,10 +4,11 @@
 
 ### Internal Document-Grounded Chatbot using RAG
 
-*Ask questions. Get answers. Grounded in your company's own documents.*
+*Ask questions. Get answers. Grounded strictly in your company's own documents.*
 
-[![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)](https://python.org)
+[![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111-green?logo=fastapi)](https://fastapi.tiangolo.com)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org)
 [![ChromaDB](https://img.shields.io/badge/Vector_Store-ChromaDB-orange)](https://www.trychroma.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -19,195 +20,103 @@
 
 **iQuery** is an open-source, internal knowledge chatbot built for startups and SMEs. It uses **Retrieval-Augmented Generation (RAG)** to answer employee questions strictly from company documents — HR policies, IT guides, onboarding handbooks, technical manuals — without hallucinating.
 
-**No paid APIs required.** Everything runs locally or on a free tier.
+**Phase 1 & 2 Complete.** This final version includes a beautiful Next.js frontend, an admin analytics panel, source citations, user feedback loops, and full Docker deployment support.
 
 ---
 
-## 🏗 Architecture Overview
+## ✨ Features
 
-```
-User Query
-    │
-    ▼
-[ FastAPI Backend ]
-    │
-    ├──► Embedder (SentenceTransformers)
-    │         │
-    │         ▼
-    │    ChromaDB (vector search)
-    │         │
-    │         ▼
-    └──► Retrieved Chunks ──► LLM (Groq / Ollama)
-                                    │
-                                    ▼
-                            Answer + Source Citations
-```
+- 💬 **Grounded Chat**: Answers are generated *strictly* using the context from uploaded documents.
+- 📄 **Source Citations**: Every answer includes expandable cards showing exact document names, page numbers, and text excerpts.
+- 📂 **Multi-Format Ingestion**: Drag-and-drop upload for PDF, DOCX, and TXT files.
+- 📊 **Admin Dashboard**: Manage indexed documents, view query logs, and monitor system latency.
+- ⭐ **Feedback Loop**: Users can rate answers (1-5 stars) to help evaluate RAG quality over time.
+- 🐳 **Docker-Ready**: Simple deployment via `docker-compose.yml`.
 
 ---
 
 ## ⚡ Tech Stack
 
-| Component | Technology |
-|---|---|
-| Backend Framework | FastAPI |
-| Embeddings | SentenceTransformers (`all-MiniLM-L6-v2`) |
-| Vector Store | ChromaDB (persistent, local) |
-| LLM (primary) | Groq API — `llama3-8b-8192` (free tier) |
-| LLM (fallback) | Ollama — `mistral` (fully local) |
-| Document Parsing | PyPDF2, python-docx |
-| Text Chunking | LangChain RecursiveCharacterTextSplitter |
+| Component | Technology | Description |
+|---|---|---|
+| **Frontend** | Next.js 14, Tailwind CSS | Dark-themed, responsive React UI |
+| **Backend** | FastAPI | High-performance async Python API |
+| **Vector DB** | ChromaDB | Local vector store for document embeddings |
+| **Metadata DB** | SQLite | Tracks document status, query logs, and feedback |
+| **Embeddings** | SentenceTransformers | `all-MiniLM-L6-v2` runs locally and free |
+| **LLM** | Groq API / Ollama | Configurable AI generator (defaults to free Groq `llama3-8b`) |
+| **Parsing** | PyPDF2, python-docx | Text extraction pipelines |
 
 ---
 
-## 🚀 Phase 1 — What's Working
+## 🏗 Architecture
 
-- [x] Upload PDF, DOCX, and TXT documents via API
-- [x] Automatic text extraction and chunking
-- [x] Dense embeddings stored in ChromaDB
-- [x] Cosine-similarity retrieval
-- [x] Grounded answer generation (Groq / Ollama)
-- [x] Source citations with page numbers
-- [x] CLI smoke test script
+iQuery uses a clear separation of concerns. The Next.js frontend communicates purely with the FastAPI backend. The backend manages the RAG pipeline: file parsing → chunking → embedding → ChromaDB storage → retrieval → LLM generation.
 
----
-
-## 📁 Project Structure
-
-```
-iQUERY/
-├── backend/
-│   ├── app/
-│   │   ├── main.py               # FastAPI entry point
-│   │   ├── config.py             # Settings (env vars)
-│   │   ├── ingestion/            # Document loading + chunking
-│   │   ├── embeddings/           # SentenceTransformers wrapper
-│   │   ├── vectorstore/          # ChromaDB CRUD
-│   │   ├── retrieval/            # Query → top-k chunks
-│   │   ├── generation/           # LLM prompt + response
-│   │   └── api/                  # FastAPI routers
-│   ├── data/sample_docs/         # Sample documents for testing
-│   ├── scripts/test_query.py     # CLI smoke test
-│   ├── requirements.txt
-│   └── .env.example
-└── README.md
-```
+For a detailed view, see [docs/architecture.md](docs/architecture.md).
 
 ---
 
 ## 🛠 Local Setup
 
 ### Prerequisites
-- Python 3.10+
-- A free [Groq API key](https://console.groq.com) (takes 30 seconds to get)
+- Docker & Docker Compose (Recommended)
+- OR Python 3.11+ and Node.js 20+
+- A free [Groq API key](https://console.groq.com)
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/Ayxsh03/iQUERY.git
-cd iQUERY
-```
+### Quick Start (Docker)
 
-### 2. Set up Python environment
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/Ayxsh03/iQUERY.git
+   cd iQUERY
+   ```
 
-### 3. Configure environment
-```bash
-cp .env.example .env
-# Edit .env and add your GROQ_API_KEY
-```
+2. **Configure Environment**
+   ```bash
+   cp backend/.env.example backend/.env
+   # Edit backend/.env to add your GROQ_API_KEY
+   ```
 
-### 4. Start the server
-```bash
-uvicorn app.main:app --reload --port 8000
-```
+3. **Start everything**
+   ```bash
+   docker compose up --build
+   ```
 
-The API will be live at `http://localhost:8000`
+4. **Visit the app**
+   - Frontend web app: `http://localhost:3000`
+   - Interactive Backend API docs: `http://localhost:8000/docs`
 
 ---
 
-## 📖 API Usage
+## 🚀 Deployment (Render Free Tier)
 
-### Interactive docs
-Visit `http://localhost:8000/docs` for the full Swagger UI.
+For full step-by-step instructions on deploying the split frontend and backend containers to the web for free, read the [Render Deployment Guide](docs/deployment.md).
 
-### Ingest a document
-```bash
-curl -X POST http://localhost:8000/api/ingest \
-  -F "file=@/path/to/your/document.pdf"
-```
-
-**Response:**
-```json
-{
-  "filename": "company_policy.pdf",
-  "pages_parsed": 12,
-  "chunks_created": 47,
-  "processing_time_s": 2.3,
-  "message": "Successfully indexed 'company_policy.pdf' with 47 chunks."
-}
-```
-
-### Ask a question
-```bash
-curl -X POST http://localhost:8000/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{"query": "What is the annual leave policy?"}'
-```
-
-**Response:**
-```json
-{
-  "query": "What is the annual leave policy?",
-  "answer": "Full-time employees are entitled to 20 days of annual paid leave per year...",
-  "sources": [
-    {
-      "source": "company_policy.pdf",
-      "page": 3,
-      "excerpt": "All full-time employees are entitled to 20 days of annual paid leave...",
-      "relevance": 0.92
-    }
-  ],
-  "chunks_retrieved": 5,
-  "latency_s": 1.2
-}
-```
-
-### Run the CLI smoke test
-```bash
-# With the server running:
-python scripts/test_query.py
-```
+> **Note on Free Hosting**: Render's free tier uses ephemeral storage. This means uploaded documents in ChromaDB and SQLite will reset when the instance sleeps. For university viva/demo purposes, simply upload fresh documents at the beginning of the presentation.
 
 ---
 
-## 🔧 Configuration
+## 📖 Detailed Guides
 
-All settings are controlled via `.env`:
-
-| Variable | Default | Description |
-|---|---|---|
-| `LLM_PROVIDER` | `groq` | `groq` or `ollama` |
-| `GROQ_API_KEY` | — | Your Groq API key |
-| `GROQ_MODEL` | `llama3-8b-8192` | Model name |
-| `EMBEDDING_MODEL` | `all-MiniLM-L6-v2` | SentenceTransformers model |
-| `CHUNK_SIZE` | `512` | Characters per chunk |
-| `CHUNK_OVERLAP` | `64` | Overlap between chunks |
-| `TOP_K_RESULTS` | `5` | Chunks retrieved per query |
+- [Architecture Overview](docs/architecture.md)
+- [API Reference](docs/api-reference.md)
+- [Deployment Guide](docs/deployment.md)
 
 ---
 
-## 🗺 Roadmap
+## 🎓 Final Project Demo Script
 
-- **Phase 1 ✅** — RAG Backend (this phase)
-- **Phase 2 🔜** — Web Chat UI (Next.js) with source citations
-- **Phase 3 🔜** — Admin Panel, feedback collection, evaluation, deployment
+1. **Start fresh**: Open the frontend `http://localhost:3000`. Show the welcome screen.
+2. **Setup**: Go to the **Admin** panel (gear icon).
+3. **Upload**: Drag and drop a sample PDF (e.g., an IT policy document). Watch the upload progress and see it appear in the Documents list.
+4. **Query**: Return to the **Chat** screen. Ask a specific question covered by the uploaded PDF.
+5. **Citations**: Expand the source cards attached to the bot's response to prove the answer was grounded.
+6. **Feedback**: Click the star rating under the answer to show the feedback loop.
+7. **Analytics**: Go back to the **Admin** panel. Open the **Query Logs** tab to show latency and chunk stats. Open the **Feedback** tab to show the captured rating.
 
 ---
 
 ## 📄 License
-
 MIT — see [LICENSE](LICENSE)
+

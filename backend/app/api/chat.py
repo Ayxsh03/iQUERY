@@ -6,8 +6,10 @@ Flow for each request:
     2. Retrieve top-k relevant chunks from the vector store
     3. Call LLM with context + query
     4. Return answer + source citations
+    5. Log the query to SQLite
 """
 
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException
@@ -16,6 +18,7 @@ from pydantic import BaseModel, Field
 from app.retrieval.retriever import retrieve
 from app.generation.llm import generate_answer
 from app.vectorstore.chroma_store import get_collection_count
+from app.db.database import get_db
 
 router = APIRouter(prefix="/api", tags=["Chat"])
 
@@ -91,9 +94,26 @@ async def chat(request: ChatRequest):
                 sources.append(SourceReference(
                     source=chunk["source"],
                     page=chunk["page"],
-                    excerpt=chunk["text"][:200].strip() + ("…" if len(chunk["text"]) > 200 else ""),
+                    excerpt=chunk["text"][:200].strip() + ("\u2026" if len(chunk["text"]) > 200 else ""),
                     relevance=round(1 - chunk["distance"], 4),
                 ))
+
+        # Step 4: Log query to SQLite
+        try:
+            with get_db() as conn:
+                conn.execute(
+                    "INSERT INTO query_logs (query, answer_preview, chunks_retrieved, latency_s, ts) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    (
+                        request.query,
+                        answer[:300],
+                        len(chunks),
+                        latency,
+                        datetime.now(timezone.utc).isoformat(),
+                    ),
+                )
+        except Exception:
+            pass  # Never let logging failure break the chat response
 
         return ChatResponse(
             query=request.query,

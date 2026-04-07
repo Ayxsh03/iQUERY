@@ -3,6 +3,7 @@ iQuery — Centralized configuration via pydantic-settings.
 All values are read from environment variables / .env file.
 """
 
+from pydantic import Field, AliasChoices
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
 
@@ -39,7 +40,7 @@ class Settings(BaseSettings):
     # ── App ──────────────────────────────────────────────────────────
     app_env: str = "development"
     app_host: str = "0.0.0.0"
-    app_port: int = 8000
+    app_port: int = Field(default=8000, validation_alias=AliasChoices("PORT", "APP_PORT"))
 
     # ── Database ─────────────────────────────────────────────────────
     db_path: str = "./iquery.db"

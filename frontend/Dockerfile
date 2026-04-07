@@ -22,6 +22,8 @@ FROM node:20-alpine AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV HOSTNAME="0.0.0.0"
+ENV PORT=3000
 
 # Copy the built artifacts from builder
 COPY --from=builder /app/public ./public
